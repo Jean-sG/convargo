@@ -156,8 +156,23 @@ function Eurovolume(){
         var volume = shipper.volume * trucker.pricePerVolume;
 
         var total = distance + volume;
+        total = Decreasing(shipper.volume,total);
         var tostring = "The shipping price for the shipper " + numero + " is :  " + total +"euros.";
         console.log(tostring);
         numero++;
     }
+}
+
+function Decreasing(volume, total){
+    if (volume > 25){
+        total = total * 0.5;
+        console.log("Vous avez droit a une reduction de 50% Bravo !")
+    }else if(volume > 10){
+        total = total * 0.7;
+                console.log("Vous avez droit a une reduction de 30% Bravo !")
+    }else if(volume > 5){
+        total = total * 0.9;
+                console.log("Vous avez droit a une reduction de 10% Bravo !")
+    }
+    return total;
 }
