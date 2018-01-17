@@ -157,10 +157,13 @@ function euroVolume(){
 
         var total = distance + volume;
         total = decreasing(shipper.volume,total);
-        var tostring = "The shipping price for the shipper " + numero + " is :  " + total +"euros.";
-        console.log(tostring);
 
         commission(total, shipper);
+        shipper.price = total;
+        deductible(shipper, total)
+        var tostring = "The shipping price for the shipper " + numero + " is :  " + shipper.price +"euros.";
+        console.log(tostring);
+        console.log();
         numero++;
     }
 }
@@ -168,13 +171,13 @@ function euroVolume(){
 function decreasing(volume, total){
     if (volume > 25){
         total = total * 0.5;
-        console.log("Vous avez droit a une reduction de 50% Bravo !")
+        console.log("You have a 50% discount Congratulations!")
     }else if(volume > 10){
         total = total * 0.7;
-        console.log("Vous avez droit a une reduction de 30% Bravo !")
+        console.log("You have a 30% discount Congratulations!")
     }else if(volume > 5){
         total = total * 0.9;
-        console.log("Vous avez droit a une reduction de 10% Bravo !")
+        console.log("You have a 10% discount Congratulations!")
     }
     return total;
 }
@@ -188,4 +191,13 @@ function commission(total, shipper){
     var convargo = resultat - treasury;
     shipper.commission.convargo = convargo;
     console.log(shipper.commission);
+}
+
+function deductible(shipper, total){
+    if (shipper.options.deductibleReduction){
+        var add = 1 * shipper.volume;
+        shipper.price += add;
+        console.log("Thanks for choose the deductible reduction, your charge amounts is: " + add);
+
+    }
 }
