@@ -71,7 +71,7 @@ var deliveries = [{
 //list of actors for payment
 //useful from exercise 5
 const actors = [{
-    'deliveryId': 'bba9500c-fd9e-453f-abf1-4cd8f52af377',
+    'rentalId': 'bba9500c-fd9e-453f-abf1-4cd8f52af377',
     'payment': [{
         'who': 'shipper',
         'type': 'debit',
@@ -141,9 +141,6 @@ const actors = [{
     }]
 }];
 
-console.log(truckers);
-console.log(deliveries);
-console.log(actors);
 euroVolume();
 
 function euroVolume(){
@@ -160,9 +157,11 @@ function euroVolume(){
 
         commission(total, shipper);
         shipper.price = total;
-        deductible(shipper, total)
+        var deductibleReductionNumber = 0;
+        deductible(shipper, total, deductibleReductionNumber)
         var tostring = "The shipping price for the shipper " + numero + " is :  " + shipper.price +"euros.";
         console.log(tostring);
+        payTheActors(shipper, deductibleReductionNumber);
         console.log();
         numero++;
     }
@@ -171,13 +170,13 @@ function euroVolume(){
 function decreasing(volume, total){
     if (volume > 25){
         total = total * 0.5;
-        console.log("You have a 50% discount Congratulations!")
+        console.log("You have a 50% discount, Congratulations!")
     }else if(volume > 10){
         total = total * 0.7;
-        console.log("You have a 30% discount Congratulations!")
+        console.log("You have a 30% discount, Congratulations!")
     }else if(volume > 5){
         total = total * 0.9;
-        console.log("You have a 10% discount Congratulations!")
+        console.log("You have a 10% discount, Congratulations!")
     }
     return total;
 }
@@ -186,18 +185,44 @@ function commission(total, shipper){
     var resultat = total * 0.3;
     shipper.commission.insurance = resultat * 0.5;
     resultat = resultat - 0.5;
-    var treasury = 1 * parseInt(shipper.distance/500);
+    var treasury = parseInt(shipper.distance/500);
     shipper.commission.treasury = treasury;
     var convargo = resultat - treasury;
     shipper.commission.convargo = convargo;
     console.log(shipper.commission);
 }
 
-function deductible(shipper, total){
+function deductible(shipper, total, deductibleReductionNumber){
     if (shipper.options.deductibleReduction){
-        var add = 1 * shipper.volume;
-        shipper.price += add;
-        console.log("Thanks for choose the deductible reduction, your charge amounts is: " + add);
+        deductibleReductionNumber = 1 * shipper.volume;
+        shipper.price = shipper.price + deductibleReductionNumber;
+        console.log("Thanks for choose the deductible reduction, your charge amounts is: " + deductibleReductionNumber);
 
     }
+}
+
+function payTheActors(shipper, deductibleReductionNumber){
+    var rental = actors.find(function(element) {
+            return element.rentalId == shipper.id;
+        });
+    for(var actor of rental.payment){
+        if(actor.who == "shipper"){
+            actor.amount = shipper.price;
+        }
+        else if(actor.who == "owner"){
+            actor.amount = shipper.price - (shipper.commission.convargo + shipper.commission.insurance + shipper.commission.treasury);
+            
+        }else if(actor.who == "insurance"){
+            actor.amount = shipper.commission.insurance;
+            
+        }else if(actor.who == "treasury"){
+            actor.amount = shipper.commission.treasury;
+        }else{
+            //who == convargo
+            actor.amount = shipper.commission.convargo + deductibleReductionNumber;
+        }
+    }
+              console.log(rental);
+  
+
 }
