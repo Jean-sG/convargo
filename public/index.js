@@ -144,9 +144,9 @@ const actors = [{
 console.log(truckers);
 console.log(deliveries);
 console.log(actors);
-Eurovolume();
+euroVolume();
 
-function Eurovolume(){
+function euroVolume(){
     var numero = 1;
     for (var shipper of deliveries){
         var trucker = truckers.find(function(element) {
@@ -156,23 +156,36 @@ function Eurovolume(){
         var volume = shipper.volume * trucker.pricePerVolume;
 
         var total = distance + volume;
-        total = Decreasing(shipper.volume,total);
+        total = decreasing(shipper.volume,total);
         var tostring = "The shipping price for the shipper " + numero + " is :  " + total +"euros.";
         console.log(tostring);
+
+        commission(total, shipper);
         numero++;
     }
 }
 
-function Decreasing(volume, total){
+function decreasing(volume, total){
     if (volume > 25){
         total = total * 0.5;
         console.log("Vous avez droit a une reduction de 50% Bravo !")
     }else if(volume > 10){
         total = total * 0.7;
-                console.log("Vous avez droit a une reduction de 30% Bravo !")
+        console.log("Vous avez droit a une reduction de 30% Bravo !")
     }else if(volume > 5){
         total = total * 0.9;
-                console.log("Vous avez droit a une reduction de 10% Bravo !")
+        console.log("Vous avez droit a une reduction de 10% Bravo !")
     }
     return total;
+}
+
+function commission(total, shipper){
+    var resultat = total * 0.3;
+    shipper.commission.insurance = resultat * 0.5;
+    resultat = resultat - 0.5;
+    var treasury = 1 * parseInt(shipper.distance/500);
+    shipper.commission.treasury = treasury;
+    var convargo = resultat - treasury;
+    shipper.commission.convargo = convargo;
+    console.log(shipper.commission);
 }
